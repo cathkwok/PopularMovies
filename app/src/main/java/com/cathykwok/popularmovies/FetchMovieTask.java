@@ -4,7 +4,9 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import org.json.JSONArray;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -19,7 +21,7 @@ import java.net.URL;
  * Created by cathykwok on 2016-12-10.
  */
 
-public class FetchMovieTask extends AsyncTask<String, Void, MovieData[]> {
+public class FetchMovieTask extends AsyncTask<String, Void, MovieData[]>{
 
     private final String LOG_TAG = FetchMovieTask.class.getSimpleName();
 
@@ -35,22 +37,10 @@ public class FetchMovieTask extends AsyncTask<String, Void, MovieData[]> {
     }
 
     private MovieData[] getMovieDataFromJson(String movieJsonStr) throws JSONException {
-        final String MOVIE_DB_RESULTS = "results";
-
         JSONObject movieJson = new JSONObject(movieJsonStr);
-        JSONArray movieArray = movieJson.getJSONArray(MOVIE_DB_RESULTS);
-
-        MovieData[] resultStrs = new MovieData[movieArray.length()];
-
-        MovieDataJsonParser jsonParser = new MovieDataJsonParser();
-
-        for (int i = 0; i < movieArray.length(); i++) {
-            JSONObject movieUrlObject = movieArray.getJSONObject(i);
-
-            resultStrs[i] = jsonParser.fromJson(movieUrlObject);
-        }
+        Gson gson = new GsonBuilder().create();
+        MovieData[] resultStrs = gson.fromJson(movieJson.getString("results"), MovieData[].class);
         return resultStrs;
-
     }
 
     @Override

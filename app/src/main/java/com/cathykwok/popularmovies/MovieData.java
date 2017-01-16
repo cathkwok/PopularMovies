@@ -3,55 +3,43 @@ package com.cathykwok.popularmovies;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.SerializedName;
+
 public class MovieData implements Parcelable {
 
+    @SerializedName("original_title")
     private String mOriginalTitle;
-    private String mMoviePosterImage;
-    private String mPlotSynopsis;
-    private String mUserRating;
-    private String mReleaseDate;
 
-    public MovieData() {
-    }
+    @SerializedName("poster_path")
+    private String mMoviePosterImage;
+
+    @SerializedName("overview")
+    private String mPlotSynopsis;
+
+    @SerializedName("vote_average")
+    private String mUserRating;
+
+    @SerializedName("release_date")
+    private String mReleaseDate;
 
     public String getOriginalTitle() {
         return mOriginalTitle;
-    }
-
-    public void setOriginalTitle(String originalTitle) {
-        mOriginalTitle = originalTitle;
     }
 
     public String getMoviePosterImage() {
         return mMoviePosterImage;
     }
 
-    public void setMoviePosterImage(String moviePosterImage) {
-        mMoviePosterImage = moviePosterImage;
-    }
-
     public String getPlotSynopsis() {
         return mPlotSynopsis;
-    }
-
-    public void setPlotSynopsis(String plotSynopsis) {
-        mPlotSynopsis = plotSynopsis;
     }
 
     public String getUserRating() {
         return mUserRating;
     }
 
-    public void setUserRating(String userRating) {
-        mUserRating = userRating;
-    }
-
     public String getReleaseDate() {
         return mReleaseDate;
-    }
-
-    public void setReleaseDate(String releaseDate) {
-        mReleaseDate = releaseDate;
     }
 
     protected MovieData(Parcel in) {
