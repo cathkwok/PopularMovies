@@ -14,4 +14,6 @@
 
     <string name="no_network_msg">Network connectivity unavailable. Please turn on WiFi or data.</string>
     <string name="ok">OK</string>
+
+    <string name="movie_loading_error">Error loading movies, please try again.</string>
 </resources>

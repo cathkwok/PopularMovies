@@ -25,6 +25,7 @@ public class FetchMovieTask extends AsyncTask<String, Void, MovieData[]> {
 
     public interface FetchMovieTaskResponse {
         void processFinish(MovieData[] data);
+        void processError();
     }
 
     public FetchMovieTaskResponse delegate = null;
@@ -119,6 +120,8 @@ public class FetchMovieTask extends AsyncTask<String, Void, MovieData[]> {
     protected void onPostExecute(MovieData[] result) {
         if (result != null) {
             delegate.processFinish(result);
+        } else {
+            delegate.processError();
         }
     }
 }
