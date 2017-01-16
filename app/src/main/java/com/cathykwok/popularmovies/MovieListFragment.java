@@ -3,6 +3,7 @@ package com.cathykwok.popularmovies;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
@@ -18,6 +19,16 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -25,9 +36,10 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
-public class MovieListFragment extends Fragment implements FetchMovieTask.FetchMovieTaskResponse{
+public class MovieListFragment extends Fragment {
 
-    @BindView(R.id.movie_grid_view) GridView mMovieGridView;
+    @BindView(R.id.movie_grid_view)
+    GridView mMovieGridView;
 
     private MovieListAdapter mMovieListAdapter;
     private SharedPreferences mSharedPreferences;
@@ -88,9 +100,43 @@ public class MovieListFragment extends Fragment implements FetchMovieTask.FetchM
         if (!Utils.isNetworkConnected(getActivity())) {
             displayNoNetworkDialog();
         } else {
-            FetchMovieTask movieTask = new FetchMovieTask(this);
-            movieTask.execute(mSortType);
+            requestMovieList();
         }
+    }
+
+    private void requestMovieList() {
+        Uri builtUri = Uri.parse(Constants.MOVIE_DB_BASE_URL).buildUpon()
+                .appendPath(mSortType)
+                .appendQueryParameter(Constants.API_KEY_PARAM, BuildConfig.MOVIE_DB_API_KEY)
+                .build();
+
+        JsonObjectRequest jsObjRequest = new JsonObjectRequest
+                (Request.Method.GET, builtUri.toString(), null, new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Gson gson = new GsonBuilder().create();
+                        MovieData[] resultStrs = null;
+                        try {
+                            resultStrs = gson.fromJson(response.getString("results"), MovieData[].class);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                        if(resultStrs != null) {
+                            processFinish(resultStrs);
+                        } else {
+                            processError();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        processError();
+                    }
+                });
+
+        // Access the RequestQueue through your singleton class.
+        AppSingleton.getInstance(getContext()).addToRequestQueue(jsObjRequest);
     }
 
     private void displayNoNetworkDialog() {
@@ -138,17 +184,14 @@ public class MovieListFragment extends Fragment implements FetchMovieTask.FetchM
         setOptionsMenu();
     }
 
-
-    @Override
-    public void processFinish(MovieData[] data) {
+    private void processFinish(MovieData[] data) {
         mMovieListAdapter.updateMovieList(new ArrayList<>(Arrays.asList(data)));
         if (mMovieGridView != null) {
             mMovieGridView.smoothScrollToPosition(0);
         }
     }
 
-    @Override
-    public void processError() {
+    private void processError() {
         Toast.makeText(getContext(), R.string.movie_loading_error, Toast.LENGTH_SHORT);
     }
 }
