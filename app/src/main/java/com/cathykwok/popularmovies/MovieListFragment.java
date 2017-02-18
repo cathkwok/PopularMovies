@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -16,7 +17,6 @@ import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.GridView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -38,8 +38,8 @@ import butterknife.Unbinder;
 
 public class MovieListFragment extends Fragment {
 
-    @BindView(R.id.movie_grid_view)
-    GridView mMovieGridView;
+    @BindView(R.id.movie_view)
+    RecyclerView mMovieView;
 
     private MovieListAdapter mMovieListAdapter;
     private SharedPreferences mSharedPreferences;
